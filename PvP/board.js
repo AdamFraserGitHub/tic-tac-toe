@@ -112,13 +112,31 @@ var checkGameState = function(board) {
   }
 
   //checkDiagonals
+  var diagonalWin = true;
   if(board[4] != 0) {
-  var player = board[0];
-  for(var i = 0; i < 3; i++) {
-    if(board[i] != player) {
-      d
+    var player = board[4];
+
+    for(var i = 0; i < 3; i++) {
+      if(board[i + row*i] != player) {
+        diagonalWin = false;
+      }
     }
-  }
+
+    if(diagonalWin) {
+      console.log('diagonal win');
+    }
+
+    diagonalWin = true;
+    for(var i = 3; i > 3; i--) {
+      if(board[i + row*i] != player) {
+        diagonalWin = false;
+      }
+    }
+
+    if(diagonalWin) {
+      console.log('diagonal win');
+    }
+
   }
 }
 
