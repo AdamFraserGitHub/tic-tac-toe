@@ -42,27 +42,23 @@ var playerClick = function(e) {
   if(!square.isTaken && !gameWon) {
 
     if(isKnot) {
-      board[square.collumn + square.row * 3] = 'K';
+      board[square.collumn + square.row * 3] = 'O';
 
       ctx.fillStyle = 'rgb(0,0,255)';
       ctx.fillRect(square.collumn * scrHeight / 3 + 50,
                    square.row * scrHeight / 3 + 50,
                    scrHeight / 3 - 100, scrHeight / 3 - 100);
     } else {
-      board[square.collumn + square.row * 3] = 'C';
+      board[square.collumn + square.row * 3] = 'X';
       ctx.fillStyle = 'rgb(255,0,0)';
       ctx.fillRect(square.collumn * scrHeight / 3 + 50,
                    square.row * scrHeight / 3 + 50,
                    scrHeight / 3 - 100, scrHeight / 3 - 100);
     }
 
-    if(!checkGameState(board)) {
+    if(getState(board) == 0) {
       isKnot = !isKnot;
       changePlayer(isKnot);
-    }
-
-    if (checkDraw(board)) {
-      gameEnd('draw');
     }
   }
 
@@ -102,63 +98,72 @@ var getRowOrColumn = function(axisValue, itteration) {
   }
 }
 
-var checkGameState = function(board) {
-  //check rows
-
-  if( (board[0] == 'C' && board[1] == 'C' && board[2] == 'C') ||
-      (board[3] == 'C' && board[4] == 'C' && board[5] == 'C') ||
-      (board[6] == 'C' && board[7] == 'C' && board[8] == 'C') ||
-
-      (board[0] == 'C' && board[3] == 'C' && board[6] == 'C') ||
-      (board[1] == 'C' && board[4] == 'C' && board[7] == 'C') ||
-      (board[2] == 'C' && board[5] == 'C' && board[8] == 'C') ||
-
-      (board[0] == 'C' && board[4] == 'C' && board[8] == 'C') ||
-      (board[2] == 'C' && board[4] == 'C' && board[6] == 'C')) {
-        gameEnd(isKnot);
-        return true;
-      }
-
-      if( (board[0] == 'K' && board[1] == 'K' && board[2] == 'K') ||
-          (board[3] == 'K' && board[4] == 'K' && board[5] == 'K') ||
-          (board[6] == 'K' && board[7] == 'K' && board[8] == 'K') ||
-
-          (board[0] == 'K' && board[3] == 'K' && board[6] == 'K') ||
-          (board[1] == 'K' && board[4] == 'K' && board[7] == 'K') ||
-          (board[2] == 'K' && board[5] == 'K' && board[8] == 'K') ||
-
-          (board[0] == 'K' && board[4] == 'K' && board[8] == 'K') ||
-          (board[2] == 'K' && board[4] == 'K' && board[6] == 'K')) {
-            gameEnd(isKnot);
-            return true;
-          }
-
-  return false;
-}
-
-var checkDraw = function(board) {
-    for(var i = 0; i < board.length; i++) {
-      if(board[i] == 0) {
-        return false;
-      }
-    }
-    return true;
-}
-
 var gameEnd = function(state) {
   canvas.style.visibility = "hidden";
   document.getElementsByClassName('playerNameContainer')[0].style.left = "50%";
 
-  if(state == 'draw') {
+  if(state == 'D') {
     background.style.backgroundColor = 'rgb(200,200,200)'
     playerNameTxt.innerHTML = 'draw... BOOOORING!';
-  } else if(state) {
+  } else if(state = 'O') {
     background.style.backgroundColor = 'rgb(0,0,255)'
     playerNameTxt.innerHTML = 'knots won!';
-  } else {
+  } else if(state = 'X') {
     background.style.backgroundColor = 'rgb(255,0,0)';
     playerNameTxt.innerHTML = 'crosses won!';
   }
+}
+
+
+var getState = function(board) {
+  var winner = 0;
+
+  //check X won
+  if( (board[0] == 'X' && board[1] == 'X' && board[2] == 'X') ||
+      (board[3] == 'X' && board[4] == 'X' && board[5] == 'X') ||
+      (board[6] == 'X' && board[7] == 'X' && board[8] == 'X') ||
+
+      (board[0] == 'X' && board[3] == 'X' && board[6] == 'X') ||
+      (board[1] == 'X' && board[4] == 'X' && board[7] == 'X') ||
+      (board[2] == 'X' && board[5] == 'X' && board[8] == 'X') ||
+
+      (board[0] == 'X' && board[4] == 'X' && board[8] == 'X') ||
+      (board[2] == 'X' && board[4] == 'X' && board[6] == 'X')) {
+        winner = 'X';
+      }
+
+  //check O won
+  if( winner == 0 && ((board[0] == 'O' && board[1] == 'O' && board[2] == 'O') ||
+      (board[3] == 'O' && board[4] == 'O' && board[5] == 'O') ||
+      (board[6] == 'O' && board[7] == 'O' && board[8] == 'O') ||
+
+      (board[0] == 'O' && board[3] == 'O' && board[6] == 'O') ||
+      (board[1] == 'O' && board[4] == 'O' && board[7] == 'O') ||
+      (board[2] == 'O' && board[5] == 'O' && board[8] == 'O') ||
+
+      (board[0] == 'O' && board[4] == 'O' && board[8] == 'O') ||
+      (board[2] == 'O' && board[4] == 'O' && board[6] == 'O'))) {
+        winner = 'O';
+      }
+
+  //check draw
+  if(winner == 0) {
+    var draw = true;
+    for(var i = 0; i < board.length; i++) {
+      if(board[i] == 0) {
+        draw = false;
+      }
+    }
+    if(draw) {
+      winner = 'D'
+    }
+  }
+
+  if(winner != 0) {
+    gameEnd(winner);
+  }
+
+  return winner;
 }
 
 var board = [0,0,0,0,0,0,0,0,0]; //0 - empty, K - knot, C - cross;
